@@ -18,7 +18,7 @@ use structopt::StructOpt;
 
 // neat trick from https://github.com/mmstick/cargo-deb/blob/e43018a46b8dc922cfdf6cdde12f7ed92fcc41aa/example/build.rs
 use std::path::PathBuf;
-use std::fs::self;
+use std::fs;
 //use std::io::Write;
 
 fn main() {
