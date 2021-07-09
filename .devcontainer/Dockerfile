@@ -118,7 +118,8 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" install -y \
         cargo libkeyutils-dev libclang-dev clang pkg-config libcryptsetup-dev \
         gcc-8-aarch64-linux-gnu g++-8-aarch64-linux-gnu && \
-   update-alternatives --install /usr/local/bin/aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-8 10
+    update-alternatives --install /usr/local/bin/aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-8 10
+#    update-alternatives --install /usr/local/bin/llvm-objdump aarch64-linux-gnu-gcc /usr/bin/llvm-objdump-10 10
 
 ENV LLVM_CONFIG_PATH=/usr/bin/llvm-config-10
 
@@ -128,6 +129,7 @@ WORKDIR ${USER_HOME_DIR}
 USER ${USERNAME}
 
 RUN rustup component add rustfmt && \
-    cargo install cargo-deb
+    cargo install cargo-deb cargo-binutils && \
+    rustup component add llvm-tools-preview
 
 USER 0
