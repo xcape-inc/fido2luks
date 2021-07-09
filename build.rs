@@ -15,11 +15,12 @@ use std::env;
 use std::str::FromStr;
 use structopt::clap::Shell;
 use structopt::StructOpt;
+let out_dir = env::var("OUT_DIR").unwrap();
 
 fn main() {
     // generate completion scripts, zsh does panic for some reason
     for shell in Shell::variants().iter().filter(|shell| **shell != "zsh") {
         //Args::clap().gen_completions(env!("CARGO_PKG_NAME"), Shell::from_str(shell).unwrap(), ".");
-        Args::clap().gen_completions(env!("OUT_DIR"), Shell::from_str(shell).unwrap(), ".");
+        Args::clap().gen_completions(out_dir, Shell::from_str(shell).unwrap(), ".");
     }
 }
