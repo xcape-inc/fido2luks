@@ -12,6 +12,10 @@ readme = "README.md"
 keywords = ["luks", "fido2", "u2f"]
 categories = ["command-line-utilities"]
 license = "MPL-2.0"
+exclude = [
+    ".github",
+    ".devcontainer",
+]
 
 [dependencies]
 ctap_hmac = { version="0.4.2", features = ["request_multiple"] }
