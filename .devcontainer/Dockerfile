@@ -101,6 +101,8 @@ RUN (if [[ 'true' == "${CREATE_GROUP}" ]]; then \
     (if [[ 'true' == "${CREATE_USER}" ]]; then \
       useradd -m -d "${USER_HOME_DIR}" -g "${GID}" -s /bin/bash \
               -u "${UID}" -G "sudo,docker" "${USERNAME}"; \
+    else
+      usermod -aG sudo,docker ${USERNAME};
     fi) && cat /etc/passwd
 
 RUN mkdir /var/www-data && chown "${USERNAME}:${USERNAME}" /var/www-data && \
