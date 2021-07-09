@@ -121,4 +121,9 @@ RUN apt-get update && \
 # Switch to the site root directory
 WORKDIR ${USER_HOME_DIR}
 
-#USER ${USERNAME}
+USER ${USERNAME}
+
+RUN rustup component add rustfmt && \
+    cargo install cargo-deb cross
+
+USER 0
