@@ -116,16 +116,18 @@ RUN mkdir -p "${USER_HOME_DIR}" && \
 # Add ruist cargo stuff
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" install -y \
-        cargo libkeyutils-dev libclang-dev clang pkg-config libcryptsetup-dev
+        cargo libkeyutils-dev libclang-dev clang pkg-config libcryptsetup-dev \
+        gcc-8-aarch64-linux-gnu g++-8-aarch64-linux-gnu && \
+   update-alternatives --install /usr/local/bin/aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-8 10
+
+ENV LLVM_CONFIG_PATH=/usr/bin/llvm-config-10
 
 # Switch to the site root directory
 WORKDIR ${USER_HOME_DIR}
 
 USER ${USERNAME}
 
-ENV CROSS_DOCKER_IN_DOCKER=true
-
 RUN rustup component add rustfmt && \
-    cargo install cargo-deb cross
+    cargo install cargo-deb
 
 USER 0
