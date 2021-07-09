@@ -16,16 +16,33 @@ use std::str::FromStr;
 use structopt::clap::Shell;
 use structopt::StructOpt;
 
+// neat trick from https://github.com/mmstick/cargo-deb/blob/e43018a46b8dc922cfdf6cdde12f7ed92fcc41aa/example/build.rs
+use std::path::PathBuf;
+use std::fs::{self, File};
+use std::io::Write;
+
 fn main() {
+    let out_str = env::var("OUT_DIR").unwrap();
+    let out_path = PathBuf::from(&out_str);
+    let mut out_path = out_path
+        .ancestors()  // .../target/<debug|release>/build/example-<SHA>/out
+        .skip(3)      // .../target/<debug|release>
+        .next().unwrap().to_owned();
+    out_path.push("assets");
+
+    if !out_path.exists() {
+        fs::create_dir(&out_path).expect("Could not create assets dir");
+    }
+    File::create(out_path.join("5.txt")).and_then(|mut f| f.write_all(b"Hello generated asset 1")).expect("Could not write asset file");
+    File::create(out_path.join("6.txt")).and_then(|mut f| f.write_all(b"Hello generated asset 2")).expect("Could not write asset file");
+
     // generate completion scripts, zsh does panic for some reason
     for shell in Shell::variants().iter().filter(|shell| **shell != "zsh") {
-        //let outdir = match env::var_os("OUT_DIR") {
-        let outdir = match env::var_os("CARGO_TARGET_DIR") {
+        let outdir = match env::var_os("OUT_DIR") {
             None => return,
             Some(outdir) => outdir,
         };
 
         Args::clap().gen_completions(env!("CARGO_PKG_NAME"), Shell::from_str(shell).unwrap(), outdir);
-        //Args::clap().gen_completions(out_dir, Shell::from_str(shell).unwrap(), ".");
     }
 }
