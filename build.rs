@@ -19,7 +19,8 @@ use structopt::StructOpt;
 fn main() {
     // generate completion scripts, zsh does panic for some reason
     for shell in Shell::variants().iter().filter(|shell| **shell != "zsh") {
-        let outdir = match env::var_os("OUT_DIR") {
+        //let outdir = match env::var_os("OUT_DIR") {
+        let outdir = match env::var_os("CARGO_TARGET_DIR") {
             None => return,
             Some(outdir) => outdir,
         };
