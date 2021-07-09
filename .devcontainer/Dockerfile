@@ -123,6 +123,8 @@ WORKDIR ${USER_HOME_DIR}
 
 USER ${USERNAME}
 
+ENV CROSS_DOCKER_IN_DOCKER=true
+
 RUN rustup component add rustfmt && \
     cargo install cargo-deb cross
 

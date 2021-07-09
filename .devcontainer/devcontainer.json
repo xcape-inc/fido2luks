@@ -37,8 +37,8 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// add user to docker group
-	"waitFor": "postStartCommand",
-	"postCreateCommand": "((GROUP_ID=$(stat -c '%g' /var/run/docker-host.sock); echo GROUP_ID=${GROUP_ID}; GROUP_NAME=$(getent group ${GROUP_ID} || echo real_docker_group); echo GROUP_NAME=${GROUP_NAME}; (getent group ${GROUP_ID} || sudo groupadd -g ${GROUP_ID} ${GROUP_NAME}) && (if [ $(getent group ${GROUP_NAME} | grep -w vscode) ]; then echo already in group; else sudo usermod -aG ${GROUP_NAME} vscode; fi)) && sudo ln -s /var/run/docker-host.sock /var/run/docker.sock && ls -la /var/run/docker-host.sock && cd /home/vscode/code) 2>&1",
+	//"waitFor": "postStartCommand",
+	//"postCreateCommand": "((GROUP_ID=$(stat -c '%g' /var/run/docker-host.sock); echo GROUP_ID=${GROUP_ID}; GROUP_NAME=$(getent group ${GROUP_ID} || echo real_docker_group); echo GROUP_NAME=${GROUP_NAME}; (getent group ${GROUP_ID} || sudo groupadd -g ${GROUP_ID} ${GROUP_NAME}) && (if [ $(getent group ${GROUP_NAME} | grep -w vscode) ]; then echo already in group; else sudo usermod -aG ${GROUP_NAME} vscode; fi)) && sudo ln -s /var/run/docker-host.sock /var/run/docker.sock && ls -la /var/run/docker-host.sock && cd /home/vscode/code) 2>&1",
 
 	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode",
