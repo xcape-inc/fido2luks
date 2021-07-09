@@ -47,7 +47,8 @@ overflow-checks = false
 
 [package.metadata.deb]
 depends = "$auto, cryptsetup"
-build-depends = "libclang-dev, libcryptsetup-dev"
+# Note: this property has been removed, but leaving it as the building system still needs these packages
+#build-depends = "libclang-dev, libcryptsetup-dev"
 extended-description = "Decrypt your LUKS partition using a FIDO2 compatible authenticator"
 assets = [
     ["target/release/fido2luks", "usr/bin/", "755"],
