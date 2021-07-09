@@ -17,13 +17,13 @@ use structopt::clap::Shell;
 use structopt::StructOpt;
 
 fn main() {
-    let outdir = match env::var_os("OUT_DIR") {
-        None => return,
-        Some(outdir) => outdir,
-    };
-
     // generate completion scripts, zsh does panic for some reason
     for shell in Shell::variants().iter().filter(|shell| **shell != "zsh") {
+        let outdir = match env::var_os("OUT_DIR") {
+            None => return,
+            Some(outdir) => outdir,
+        };
+
         Args::clap().gen_completions(env!("CARGO_PKG_NAME"), Shell::from_str(shell).unwrap(), outdir);
         //Args::clap().gen_completions(out_dir, Shell::from_str(shell).unwrap(), ".");
     }
