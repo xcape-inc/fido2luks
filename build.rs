@@ -43,6 +43,6 @@ fn main() {
         //    Some(outdir) => outdir,
         //};
 
-        Args::clap().gen_completions(env!("CARGO_PKG_NAME"), Shell::from_str(shell).unwrap(), outdir);
+        Args::clap().gen_completions(env!("CARGO_PKG_NAME"), Shell::from_str(shell).unwrap(), &outdir);
     }
 }
