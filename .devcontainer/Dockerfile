@@ -116,9 +116,10 @@ RUN mkdir -p "${USER_HOME_DIR}" && \
 # Add ruist cargo stuff
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" install -y \
-        cargo libkeyutils-dev libclang-dev clang pkg-config libcryptsetup-dev \
+        cargo libkeyutils-dev libclang-10-dev libclang1-10 libclang-common-10-dev clang pkg-config libcryptsetup-dev \
         gcc-8-aarch64-linux-gnu g++-8-aarch64-linux-gnu && \
-    update-alternatives --install /usr/local/bin/aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-8 10
+    update-alternatives --install /usr/local/bin/aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-8 10 && \
+    update-alternatives --install /usr/local/bin/aarch64-linux-gnu-gcc-ar aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-ar-8 10
 #    update-alternatives --install /usr/local/bin/llvm-objdump aarch64-linux-gnu-gcc /usr/bin/llvm-objdump-10 10
 
 ENV LLVM_CONFIG_PATH=/usr/bin/llvm-config-10
@@ -132,4 +133,23 @@ RUN rustup component add rustfmt && \
     cargo install cargo-deb cargo-binutils && \
     rustup component add llvm-tools-preview
 
+# Enable the arm64 architecture
+ENV PKG_CONFIG_ALLOW_CROSS=1
+
+RUN rustup target add aarch64-unknown-linux-gnu
+
 USER 0
+
+# Add new architecture, limit default sources to arm64, and add sources for arm64
+RUN dpkg --add-architecture arm64 && \
+    sed -i "s/^\\(deb http\\)/deb [arch=amd64] http/" /etc/apt/sources.list && \
+    (echo -ne "deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ focal main restricted universe multiverse\ndeb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ focal-security main restricted universe multiverse\ndeb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ focal-updates main restricted universe multiverse\n" | tee -a /etc/apt/sources.list)
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" install -y \
+        libc6-arm64-cross libc6-dev-arm64-cross libkeyutils-dev:arm64 libclang-10-dev:arm64 libclang1-10:arm64 libclang-common-10-dev:arm64 \
+        libcryptsetup-dev:arm64 pkg-config:arm64 && \
+    DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" install --reinstall -y libclang1-10 && \
+    update-alternatives --install /usr/local/bin/aarch64-linux-gnu-gcc-ar aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-ar-8 10 && \
+    update-alternatives --install /usr/local/bin/aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-8 10
+
+
