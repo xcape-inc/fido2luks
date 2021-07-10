@@ -6,5 +6,6 @@ fido2luks.bash
 fido2luks.elv
 fido2luks.fish
 fido2luks.zsh
+_fido2luks.ps1
 result
 result-*
