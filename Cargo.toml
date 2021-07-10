@@ -46,6 +46,8 @@ incremental = false
 overflow-checks = false
 
 [package.metadata.deb]
+# Note: this presently only works with native target; doesnt work when cross compiling [https://github.com/mmstick/cargo-deb/issues/117]
+# FYI from amd64: libuuid1 (>= 2.34), libjson-c4 (>= 0.13.1+dfsg), libudev1 (>= 245.4), libc6 (>= 2.31), libpcre2-8-0 (>= 10.34), libargon2-1 (>= 0~20171227), libblkid1 (>= 2.34), libselinux1 (>= 3.0), cryptsetup (>=2:2.2.2), libdevmapper1.02.1 (>= 2:1.02.167), libssl1.1 (>= 1.1.1f), libcryptsetup12 (>= 2:2.2.2)
 depends = "$auto, cryptsetup"
 # Note: this property has been removed, but leaving it as the building system still needs these packages
 #build-depends = "libclang-dev, libcryptsetup-dev"
