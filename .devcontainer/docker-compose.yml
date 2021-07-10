@@ -8,7 +8,7 @@ services:
     # On Linux, you may need to update the USER_UID and USER_GID in .devcontainer/Dockerfile 
     # to match your user if not 1000. See https://aka.ms/vscode-remote/containers/non-root for details.
     # user: vscode
-
+    image: ghcr.io/xcape-inc/fido2luks-builder:master
     build: 
       context: .
       dockerfile: Dockerfile
@@ -22,9 +22,9 @@ services:
     command: 
       - "(((GROUP_ID=$$(stat -c '%g' /var/run/docker-host.sock); echo GROUP_ID=$${GROUP_ID}; GROUP_NAME=$$(getent group $${GROUP_ID} || echo real_docker_group); echo GROUP_NAME=$${GROUP_NAME}; (getent group $${GROUP_ID} || sudo groupadd -g $${GROUP_ID} $${GROUP_NAME}) && (if [ $$(getent group $${GROUP_NAME} | grep -w vscode) ]; then echo already in group; else sudo usermod -aG $${GROUP_NAME} vscode; fi)) && sudo ln -s /var/run/docker-host.sock /var/run/docker.sock && ls -la /var/run/docker-host.sock && cd /home/vscode/code) 2>&1) && exec tail -f /dev/null"
     
-    ports:
-      # <Port exposed> : < http Port running inside container>
-      - '8000:8000'
+    #ports:
+    #  # <Port exposed> : < http Port running inside container>
+    #  - '8000:8000'
     expose:
       # Opens port 8000 on the container
       - '8000'

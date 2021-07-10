@@ -1,0 +1,12 @@
+name: 'fido2luks-builder'
+description: 'Execute script in the context of the fido2luks-builder docker image'
+inputs:
+  bash_script:  # id of input
+    description: 'script to run on the shell'
+    required: true
+runs:
+  using: 'docker'
+  image: 'ghcr.io/xcape-inc/fido2luks-builder:master'
+  entrypoint: /usr/local/sbin/run_script_nonroot.sh
+  args:
+    - ${{ inputs.bash_script }}

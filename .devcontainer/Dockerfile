@@ -152,4 +152,13 @@ RUN apt-get update && \
     update-alternatives --install /usr/local/bin/aarch64-linux-gnu-gcc-ar aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-ar-8 10 && \
     update-alternatives --install /usr/local/bin/aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-8 10
 
+COPY --chown=0:0 run_script_nonroot.sh /usr/local/sbin/run_script_nonroot.sh
 
+LABEL org.opencontainers.image.authors='Xcape, Inc. <support@xcapeinc.com>'
+LABEL org.opencontainers.image.url='https://github.com/xcape-inc/fido2luks'
+LABEL org.opencontainers.image.documentation='https://xcape-inc.github.io/fido2luks'
+LABEL org.opencontainers.image.source='https://github.com/xcape-inc/fido2luks.git'
+LABEL org.opencontainers.image.vendor='Xcape, Inc.'
+#LABEL org.opencontainers.image.licenses=''
+LABEL org.opencontainers.image.title='ghcr.io/xcape-inc/fido2luks-builder'
+LABEL org.opencontainers.image.description="Docker image for building fido2luks deb package including cross compiling"

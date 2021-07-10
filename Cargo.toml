@@ -61,3 +61,4 @@ assets = [
     ["initramfs-tools/fido2luks.conf", "etc/", "644"],
 ]
 conf-files = ["/etc/fido2luks.conf"]
+# TODO: add trigger for initramfs update
