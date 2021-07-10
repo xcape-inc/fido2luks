@@ -93,7 +93,9 @@ jobs:
         uses: ./
         with:
           bash_script: |
-            cargo deb --target aarch64-unknown-linux-gnu -- --all-features
+            whoami
+            ls -la
+      #      cargo deb --target aarch64-unknown-linux-gnu -- --all-features
 
       - name: Store package artifact
         uses: actions/upload-artifact@v2
