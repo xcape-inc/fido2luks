@@ -145,7 +145,7 @@ RUN apt-get update && \
         libc6-arm64-cross libc6-dev-arm64-cross libkeyutils-dev:arm64 libclang-10-dev:arm64 libclang1-10:arm64 libclang-common-10-dev:arm64 \
         libcryptsetup-dev:arm64 pkg-config:arm64 gcc-8-aarch64-linux-gnu g++-8-aarch64-linux-gnu && \
     DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" install --reinstall -y libclang1-10 && \
-    update-alternatives --install /usr/local/bin/aarch64-linux-gnu-gcc-ar aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-ar-8 10 && \
+    update-alternatives --install /usr/local/bin/aarch64-linux-gnu-gcc-ar aarch64-linux-gnu-gcc-ar /usr/bin/aarch64-linux-gnu-gcc-ar-8 10 && \
     update-alternatives --install /usr/local/bin/aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-8 10
 
 COPY --chown=0:0 run_script_nonroot.sh /usr/local/sbin/run_script_nonroot.sh
