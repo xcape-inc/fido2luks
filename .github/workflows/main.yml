@@ -102,6 +102,8 @@ jobs:
             id
             pwd
             ls -la
+            env
+            ps -ef | cat
             rustup show
       #      cargo deb --target aarch64-unknown-linux-gnu -- --all-features
 

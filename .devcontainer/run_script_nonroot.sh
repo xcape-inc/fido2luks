@@ -20,6 +20,8 @@ fi
 BASH_SCRIPT_CONTENTS="${PARAMS[0]}"
 BASH_SCRIPT_PATH="${PARAMS[3]:-/tmp/bash.script}"
 
+rm -f "${BASH_SCRIPT_PATH}"
+
 printf '%s' "#!/bin/bash
 set -e
 trap 'catch \$? \$LINENO' ERR
