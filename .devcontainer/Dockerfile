@@ -113,14 +113,10 @@ RUN mkdir -p "${USER_HOME_DIR}" && \
     chown -R "${UID}:${GID}" "${USER_HOME_DIR}" && \
     ls -la /root
 
-# Add ruist cargo stuff
+# Add rust cargo stuff
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" install -y \
-        cargo libkeyutils-dev libclang-10-dev libclang1-10 libclang-common-10-dev clang pkg-config libcryptsetup-dev \
-        gcc-8-aarch64-linux-gnu g++-8-aarch64-linux-gnu && \
-    update-alternatives --install /usr/local/bin/aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-8 10 && \
-    update-alternatives --install /usr/local/bin/aarch64-linux-gnu-gcc-ar aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-ar-8 10
-#    update-alternatives --install /usr/local/bin/llvm-objdump aarch64-linux-gnu-gcc /usr/bin/llvm-objdump-10 10
+        cargo libkeyutils-dev libclang-10-dev libclang1-10 libclang-common-10-dev clang pkg-config libcryptsetup-dev
 
 ENV LLVM_CONFIG_PATH=/usr/bin/llvm-config-10
 
@@ -133,7 +129,7 @@ RUN rustup component add rustfmt && \
     cargo install cargo-deb cargo-binutils && \
     rustup component add llvm-tools-preview
 
-# Enable the arm64 architecture
+# Enable the arm64 architecture; things from here down could easily be another architecture
 ENV PKG_CONFIG_ALLOW_CROSS=1
 
 RUN rustup target add aarch64-unknown-linux-gnu
@@ -147,7 +143,7 @@ RUN dpkg --add-architecture arm64 && \
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" install -y \
         libc6-arm64-cross libc6-dev-arm64-cross libkeyutils-dev:arm64 libclang-10-dev:arm64 libclang1-10:arm64 libclang-common-10-dev:arm64 \
-        libcryptsetup-dev:arm64 pkg-config:arm64 && \
+        libcryptsetup-dev:arm64 pkg-config:arm64 gcc-8-aarch64-linux-gnu g++-8-aarch64-linux-gnu && \
     DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" install --reinstall -y libclang1-10 && \
     update-alternatives --install /usr/local/bin/aarch64-linux-gnu-gcc-ar aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-ar-8 10 && \
     update-alternatives --install /usr/local/bin/aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-8 10
