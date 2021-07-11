@@ -4,9 +4,19 @@ inputs:
   bash_script:  # id of input
     description: 'script to run on the shell'
     required: true
+  uid:
+    description: 'The uid to set for the user running the script.  Should not already be in use by another user in the container'
+    required: false
+    default: ''
+  gid:
+    description: 'The gid to set for the primary group of the user running the script.  Should not already be in use by another group in the container'
+    required: false
+    default: ''
 runs:
   using: 'docker'
   image: 'ghcr.io/xcape-inc/fido2luks-builder:master'
   entrypoint: /usr/local/sbin/run_script_nonroot.sh
   args:
     - ${{ inputs.bash_script }}
+    - ${{ inputs.uid }}
+    - ${{ inputs.gid }}
