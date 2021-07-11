@@ -92,6 +92,10 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
+      # add qemu just in case
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
       - name: Cross-compile arm64 debian package
         uses: ./
         with:
