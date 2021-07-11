@@ -40,9 +40,10 @@ fi
 if [[ -n "${NEW_GID:-}" ]]; then
   groupmod -g "${NEW_GID}" "${username}"
 fi
-# change ownership of the home directory and contents if uid or gid have changed
+# change ownership of the home and cargo directories and contents if uid or gid have changed
 if [[ -n "${NEW_UID:-}" || -n "${NEW_GID:-}" ]]; then
   chown -R "$(id -u ${username}):$(id -g ${username})" "/home/${username}"
+  chown -R "$(id -u ${username}):$(id -g ${username})" /usr/local/cargo
 fi
 
 chown "$(id -u ${username}):$(id -g ${username})" "${BASH_SCRIPT_PATH}"
