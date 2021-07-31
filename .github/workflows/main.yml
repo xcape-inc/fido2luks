@@ -100,65 +100,69 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-  # TODO: template this so all target platforms can use it
-  # Steps represent a sequence of tasks that will be executed as part of the job
-  .steps: &build-package-steps-template
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: '0'
+  # This job just holds a steps element to template on and will never be run
+  build-package-steps-template-holder-job:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
 
-    - name: get the current dynamic git version numbers
-      id: get_versions
-      run: |
-        git clone https://github.com/xcape-inc/ci-tools.git --branch main --single-branch .git/ci-tools
-        . .git/ci-tools/get_tag_from_git.sh > /dev/null
-        echo "::set-output name=cur_version::${CUR_VERSION}"
-        echo "::set-output name=long_form_cur_version::${LONG_FORM_CUR_VERSION}"
+    # template of base tasks to set up job space to build a package
+    steps: &build-package-steps-template
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
 
-    - name: show version
-      run: |
-        echo Short version: ${{ steps.get_versions.outputs.cur_version }}
-        echo Long version: ${{ steps.get_versions.outputs.long_form_cur_version }}
+      - name: get the current dynamic git version numbers
+        id: get_versions
+        run: |
+          git clone https://github.com/xcape-inc/ci-tools.git --branch main --single-branch .git/ci-tools
+          . .git/ci-tools/get_tag_from_git.sh > /dev/null
+          echo "::set-output name=cur_version::${CUR_VERSION}"
+          echo "::set-output name=long_form_cur_version::${LONG_FORM_CUR_VERSION}"
 
-    - name: Set short sha
-      id: shortsha
-      run: echo "::set-output name=sha_short::${GITHUB_SHA::7}"
+      - name: show version
+        run: |
+          echo Short version: ${{ steps.get_versions.outputs.cur_version }}
+          echo Long version: ${{ steps.get_versions.outputs.long_form_cur_version }}
 
-    - name: Set uid:gid
-      id: uidgid
-      run: |
-        echo "::set-output name=uid::$(id -u)"
-        echo "::set-output name=gid::$(id -g)"
-        echo "::set-output name=uid_gid::$(id -u):$(id -g)"
+      - name: Set short sha
+        id: shortsha
+        run: echo "::set-output name=sha_short::${GITHUB_SHA::7}"
 
-    - name: Current uid:gid
-      run: echo ${{ steps.uidgid.outputs.uid_gid }}
+      - name: Set uid:gid
+        id: uidgid
+        run: |
+          echo "::set-output name=uid::$(id -u)"
+          echo "::set-output name=gid::$(id -g)"
+          echo "::set-output name=uid_gid::$(id -u):$(id -g)"
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      - name: Current uid:gid
+        run: echo ${{ steps.uidgid.outputs.uid_gid }}
 
-    - name: Log in to the Container registry
-      uses: docker/login-action@v1
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-    - name: Extract metadata (tags, labels) for Docker
-      id: meta
-      uses: docker/metadata-action@v3
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        # generate Docker tags based on the following events/attributes
-        tags: |
-          type=ref,event=branch
-          type=semver,pattern={{version}},enable=${{ startsWith(github.ref, 'refs/tags/v') }}
-          type=semver,pattern={{major}}.{{minor}},enable=${{ startsWith(github.ref, 'refs/tags/v') }}
-          type=semver,pattern={{major}},enable=${{ startsWith(github.ref, 'refs/tags/v') }}
-          type=sha
-        labels: |
-          org.opencontainers.image.ref.name=${{ github.ref }}
+      - name: Log in to the Container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # generate Docker tags based on the following events/attributes
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}},enable=${{ startsWith(github.ref, 'refs/tags/v') }}
+            type=semver,pattern={{major}}.{{minor}},enable=${{ startsWith(github.ref, 'refs/tags/v') }}
+            type=semver,pattern={{major}},enable=${{ startsWith(github.ref, 'refs/tags/v') }}
+            type=sha
+          labels: |
+            org.opencontainers.image.ref.name=${{ github.ref }}
 
   # Parallel workflows for each target arch
   build-package-arm64-package:
