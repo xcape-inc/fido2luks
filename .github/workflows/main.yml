@@ -175,11 +175,11 @@ jobs:
 
       ### begin Arch specific stuff
       - name: Set up QEMU
-        if: ${{ matrix.target_arch }} != 'amd64'
+        if: matrix.target_arch != 'amd64'
         uses: docker/setup-qemu-action@v1
 
       - name: Compile debian package for amd64
-        if: ${{ matrix.target_arch }} == 'amd64'
+        if: matrix.target_arch == 'amd64'
         uses: ./
         with:
           # ensure the user in the action matches the current user in the job
@@ -195,7 +195,7 @@ jobs:
             cargo deb -- --all-features
 
       - name: Cross-compile arm64 debian package
-        if: ${{ matrix.target_arch }} == 'arm64'
+        if: matrix.target_arch == 'arm64'
         uses: ./
         with:
           # ensure the user in the action matches the current user in the job
@@ -211,6 +211,15 @@ jobs:
             cargo deb --target aarch64-unknown-linux-gnu -- --all-features
 
       - name: Store package artifact
+        if: matrix.target_arch == 'amd64'
+        uses: actions/upload-artifact@v2
+        with:
+          name: fido2luks-${{ matrix.target_arch }}-debs
+          path: target/debian/fido2luks_*_${{ matrix.target_arch }}.deb
+          retention-days: 5
+
+      - name: Store package artifact
+        if: matrix.target_arch != 'amd64'
         uses: actions/upload-artifact@v2
         with:
           name: fido2luks-${{ matrix.target_arch }}-debs
