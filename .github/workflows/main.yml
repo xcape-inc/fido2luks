@@ -100,13 +100,22 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-  # This job just holds a steps element to template on and will never be run
-  build-package-steps-template-holder-job:
-    if: ${{ false }}
+  # job to build and package the software, matrixed by arch
+  build-and-package:
+    needs: build-and-push-image
     runs-on: ubuntu-latest
+    # allow access to github docker registry
+    permissions:
+      contents: read
+      packages: read
 
-    # template of base tasks to set up job space to build a package
-    steps: &build-package-steps-template
+    strategy:
+      matrix:
+        target_arch:
+          - amd64
+          - arm64
+    
+    steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -164,24 +173,29 @@ jobs:
           labels: |
             org.opencontainers.image.ref.name=${{ github.ref }}
 
-  # Parallel workflows for each target arch
-  build-package-arm64-package:
-    needs: build-and-push-image
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-    # allow access to github docker registry
-    permissions:
-      contents: read
-      packages: read
-
-    steps: 
-      - *build-package-steps-template
-
       ### begin Arch specific stuff
       - name: Set up QEMU
+        if: ${{ matrix.target_arch }} != 'amd64'
         uses: docker/setup-qemu-action@v1
 
+      - name: Compile debian package for amd64
+        if: ${{ matrix.target_arch }} == 'amd64'
+        uses: ./
+        with:
+          # ensure the user in the action matches the current user in the job
+          uid: ${{ steps.uidgid.outputs.uid }}
+          gid: ${{ steps.uidgid.outputs.gid }}
+          bash_script: |
+            id
+            pwd
+            ls -la
+            env
+            ps -ef | cat
+            rustup show
+            cargo deb -- --all-features
+
       - name: Cross-compile arm64 debian package
+        if: ${{ matrix.target_arch }} == 'arm64'
         uses: ./
         with:
           # ensure the user in the action matches the current user in the job
@@ -199,45 +213,8 @@ jobs:
       - name: Store package artifact
         uses: actions/upload-artifact@v2
         with:
-          name: fido2luks-arm64-debs
-          path: target/aarch64-unknown-linux-gnu/debian/fido2luks_*_arm64.deb
-          retention-days: 5
-
-      # TODO: upload spun deb packages to private repo
-
-  build-package-amd64-package:
-    needs: build-and-push-image
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-    # allow access to github docker registry
-    permissions:
-      contents: read
-      packages: read
-
-    steps: 
-      - *build-package-steps-template
-
-      ### begin Arch specific stuff
-      - name: Compile amd64 debian package
-        uses: ./
-        with:
-          # ensure the user in the action matches the current user in the job
-          uid: ${{ steps.uidgid.outputs.uid }}
-          gid: ${{ steps.uidgid.outputs.gid }}
-          bash_script: |
-            id
-            pwd
-            ls -la
-            env
-            ps -ef | cat
-            rustup show
-            cargo deb -- --all-features
-
-      - name: Store package artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: fido2luks-amd64-debs
-          path: target/aarch64-unknown-linux-gnu/debian/fido2luks_*_amd64.deb
+          name: fido2luks-${{ matrix.target_arch }}-debs
+          path: target/aarch64-unknown-linux-gnu/debian/fido2luks_*_${{ matrix.target_arch }}.deb
           retention-days: 5
 
       # TODO: upload spun deb packages to private repo
