@@ -171,7 +171,7 @@ jobs:
       packages: read
 
     steps: 
-      <<: *build-package-steps-template
+      - *build-package-steps-template
 
       ### begin Arch specific stuff
       - name: Set up QEMU
@@ -211,7 +211,7 @@ jobs:
       packages: read
 
     steps: 
-      <<: *build-package-steps-template
+      - *build-package-steps-template
 
       ### begin Arch specific stuff
       - name: Compile amd64 debian package
