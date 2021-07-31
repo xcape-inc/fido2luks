@@ -191,7 +191,7 @@ jobs:
             ls -la
             env
             ps -ef | cat
-            DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" install --reinstall -y pkg-config
+            DEBIAN_FRONTEND=noninteractive sudo -E apt-get -o Dpkg::Options::="--force-confold" install --reinstall -y pkg-config
             rustup show
             cargo deb -- --all-features
 
