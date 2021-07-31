@@ -210,7 +210,7 @@ jobs:
             rustup show
             cargo deb --target aarch64-unknown-linux-gnu -- --all-features
 
-      - name: Store package artifact
+      - name: Store cross-compiled package artifact
         if: matrix.target_arch == 'amd64'
         uses: actions/upload-artifact@v2
         with:
@@ -218,7 +218,7 @@ jobs:
           path: target/debian/fido2luks_*_${{ matrix.target_arch }}.deb
           retention-days: 5
 
-      - name: Store package artifact
+      - name: Store amd64 package artifact
         if: matrix.target_arch != 'amd64'
         uses: actions/upload-artifact@v2
         with:
