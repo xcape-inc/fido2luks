@@ -47,7 +47,7 @@ jobs:
         run: echo ${{ steps.uidgid.outputs.uid_gid }}
 
       #- name: Set up QEMU
-      #  uses: docker/setup-qemu-action@v1
+      #  uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -176,7 +176,7 @@ jobs:
       ### begin Arch specific stuff
       - name: Set up QEMU
         if: matrix.target_arch != 'amd64'
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v3
 
       - name: Compile debian package for amd64
         if: matrix.target_arch == 'amd64'
