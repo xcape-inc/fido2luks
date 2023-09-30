@@ -3,7 +3,7 @@ name: default
 
 steps:
  - name: fmt
-   image: rust:1.43.0
+   image: rust:1.72.1
    commands:
      - rustup component add rustfmt
      - cargo fmt --all -- --check
