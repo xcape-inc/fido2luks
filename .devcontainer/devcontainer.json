@@ -1,50 +1,54 @@
 // For format details, see https://aka.ms/vscode-remote/devcontainer.json or this file's README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.101.0/containers/node
 {
-	"name": "Docker VS Code Remote Container",
-	//"dockerFile": "Dockerfile",
+	"name": "fido2luks",
 	"dockerComposeFile": "docker-compose.yml",
-	"service": "node",
-	
-	//"mounts": [ "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind" ],
+	"service": "devcontainer",
+	"workspaceFolder": "/workspace",
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": {
+				//"terminal.integrated.shell.linux": "/bin/bash",
+				//"terminal.integrated.shellArgs.linux": ["-l"],
+				"lldb.executable": "/usr/bin/lldb",
+				// VS Code don't watch files under ./target
+				"files.watcherExclude": {
+					"**/target/**": true
+				},
+				"rust-analyzer.checkOnSave.command": "clippy"
+			},
 
-	//"runArgs": [ "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined" ],
-	// Set *default* container specific settings.json values on container create.
-	"settings": { 
-		"terminal.integrated.shell.linux": "/bin/bash",
-		"terminal.integrated.shellArgs.linux": ["-l"],
-		"lldb.executable": "/usr/bin/lldb",
-		// VS Code don't watch files under ./target
-		"files.watcherExclude": {
-			"**/target/**": true
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"swellaby.rust-pack",
+				"vadimcn.vscode-lldb",
+				"mutantdino.resourcemonitor",
+				"redhat.vscode-yaml",
+				"cschleiden.vscode-github-actions",
+
+				"github.vscode-pull-request-github",
+				"redhat.vscode-yaml",
+				"github.vscode-github-actions",
+				"yzhang.markdown-all-in-one",
+				"eamodio.gitlens",
+
+				"ms-vscode.makefile-tools"
+			]
 		}
 	},
 
-	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": [
-		"ms-azuretools.vscode-docker",
-		"cschleiden.vscode-github-actions",
-		"yzhang.markdown-all-in-one",
-		"rust-lang.rust",
-		"bungcip.better-toml",
-		"vadimcn.vscode-lldb",
-		"mutantdino.resourcemonitor"
-	],
-
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
-	"appPort": 8000,
+
+	// Make sure the .aws directory exists so it can be mounted; build the container with buildx bake
+	"initializeCommand": ".devcontainer/initialize.sh",
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// add user to docker group
-	//"waitFor": "postStartCommand",
-	//"postCreateCommand": "((GROUP_ID=$(stat -c '%g' /var/run/docker-host.sock); echo GROUP_ID=${GROUP_ID}; GROUP_NAME=$(getent group ${GROUP_ID} || echo real_docker_group); echo GROUP_NAME=${GROUP_NAME}; (getent group ${GROUP_ID} || sudo groupadd -g ${GROUP_ID} ${GROUP_NAME}) && (if [ $(getent group ${GROUP_NAME} | grep -w vscode) ]; then echo already in group; else sudo usermod -aG ${GROUP_NAME} vscode; fi)) && sudo ln -s /var/run/docker-host.sock /var/run/docker.sock && ls -la /var/run/docker-host.sock && cd /home/vscode/code) 2>&1",
+	"postCreateCommand": ".devcontainer/postcreate.sh",
 
-	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
-	"remoteUser": "vscode",
-	"updateRemoteUserUID": false,
-
-	// bind src to correct place in tree
-	"workspaceMount": "source=${localWorkspaceFolder},target=/home/vscode/code,type=bind,consistency=delegated",
-	"workspaceFolder": "/home/vscode/code"
+// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+	"remoteUser": "vscode"
 }

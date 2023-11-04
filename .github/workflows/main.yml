@@ -30,7 +30,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set short sha
         id: shortsha
@@ -47,13 +47,13 @@ jobs:
         run: echo ${{ steps.uidgid.outputs.uid_gid }}
 
       #- name: Set up QEMU
-      #  uses: docker/setup-qemu-action@v1
+      #  uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
 
       - name: Cache Docker layers
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -61,7 +61,7 @@ jobs:
             ${{ runner.os }}-buildx-
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -69,7 +69,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           # generate Docker tags based on the following events/attributes
@@ -83,14 +83,15 @@ jobs:
             org.opencontainers.image.ref.name=${{ github.ref }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
-          context: ./.devcontainer
+          context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
+          file: .devcontainer/Dockerfile
 
       # Temp fix
       # https://github.com/docker/build-push-action/issues/252
@@ -117,7 +118,7 @@ jobs:
     
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: '0'
 
@@ -149,10 +150,10 @@ jobs:
         run: echo ${{ steps.uidgid.outputs.uid_gid }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -160,7 +161,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           # generate Docker tags based on the following events/attributes
@@ -176,7 +177,7 @@ jobs:
       ### begin Arch specific stuff
       - name: Set up QEMU
         if: matrix.target_arch != 'amd64'
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v3
 
       - name: Compile debian package for amd64
         if: matrix.target_arch == 'amd64'
@@ -213,7 +214,7 @@ jobs:
 
       - name: Store cross-compiled package artifact
         if: matrix.target_arch == 'amd64'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: fido2luks-amd64-debs
           path: target/debian/fido2luks_*_amd64.deb
@@ -221,7 +222,7 @@ jobs:
 
       - name: Store amd64 package artifact
         if: matrix.target_arch == 'arm64'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: fido2luks-arm64-debs
           path: target/aarch64-unknown-linux-gnu/debian/fido2luks_*_arm64.deb
